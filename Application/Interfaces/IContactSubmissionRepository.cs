@@ -8,17 +8,10 @@ namespace DemoApp.Application.Interfaces;
 public interface IContactSubmissionRepository
 {
     /// <summary>
-    /// Checks whether a submission token already exists.
-    /// </summary>
-    /// <param name="submissionToken">Token to check.</param>
-    /// <param name="cancellationToken">Cancellation token for async operations.</param>
-    /// <returns><c>true</c> when the token exists; otherwise, <c>false</c>.</returns>
-    Task<bool> SubmissionTokenExistsAsync(string submissionToken, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Persists a new contact submission.
+    /// Persists a new contact submission if the token is unique.
     /// </summary>
     /// <param name="submission">Entity to persist.</param>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
-    Task AddAsync(ContactSubmission submission, CancellationToken cancellationToken);
+    /// <returns><c>true</c> when inserted; <c>false</c> when a duplicate token is detected.</returns>
+    Task<bool> TryAddAsync(ContactSubmission submission, CancellationToken cancellationToken);
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Cryptography;
 using DemoApp.Application.Contracts;
 using DemoApp.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ public class HomeController : Controller
     {
         var viewModel = new ContactFormViewModel
         {
-            SubmissionToken = Guid.NewGuid().ToString("N")
+            SubmissionToken = CreateSubmissionToken()
         };
 
         return View(viewModel);
@@ -45,8 +46,9 @@ public class HomeController : Controller
     {
         if (!ModelState.IsValid)
         {
+            ModelState.AddModelError(string.Empty, "Please correct the highlighted fields and try again.");
             viewModel.SubmissionToken = string.IsNullOrWhiteSpace(viewModel.SubmissionToken)
-                ? Guid.NewGuid().ToString("N")
+                ? CreateSubmissionToken()
                 : viewModel.SubmissionToken;
             return View(viewModel);
         }
@@ -85,5 +87,10 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private static string CreateSubmissionToken()
+    {
+        return Convert.ToHexString(RandomNumberGenerator.GetBytes(16)).ToLowerInvariant();
     }
 }

@@ -23,12 +23,6 @@ public class ContactService : IContactService
     /// <inheritdoc />
     public async Task<ContactSubmissionResult> SubmitContactAsync(ContactSubmissionRequest request, CancellationToken cancellationToken)
     {
-        var isDuplicate = await _contactSubmissionRepository.SubmissionTokenExistsAsync(request.SubmissionToken, cancellationToken);
-        if (isDuplicate)
-        {
-            return ContactSubmissionResult.Duplicate();
-        }
-
         var entity = new ContactSubmission
         {
             Name = request.Name.Trim(),
@@ -39,7 +33,9 @@ public class ContactService : IContactService
             CreatedAt = DateTime.UtcNow
         };
 
-        await _contactSubmissionRepository.AddAsync(entity, cancellationToken);
-        return ContactSubmissionResult.Success();
+        var inserted = await _contactSubmissionRepository.TryAddAsync(entity, cancellationToken);
+        return inserted
+            ? ContactSubmissionResult.Success()
+            : ContactSubmissionResult.Duplicate();
     }
 }

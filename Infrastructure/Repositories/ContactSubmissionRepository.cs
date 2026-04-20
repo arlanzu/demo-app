@@ -1,6 +1,7 @@
 using DemoApp.Application.Interfaces;
 using DemoApp.Domain.Entities;
 using DemoApp.Infrastructure.Data;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoApp.Infrastructure.Repositories;
@@ -22,17 +23,17 @@ public class ContactSubmissionRepository : IContactSubmissionRepository
     }
 
     /// <inheritdoc />
-    public Task<bool> SubmissionTokenExistsAsync(string submissionToken, CancellationToken cancellationToken)
+    public async Task<bool> TryAddAsync(ContactSubmission submission, CancellationToken cancellationToken)
     {
-        return _dbContext.ContactSubmissions
-            .AsNoTracking()
-            .AnyAsync(x => x.SubmissionToken == submissionToken, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task AddAsync(ContactSubmission submission, CancellationToken cancellationToken)
-    {
-        await _dbContext.ContactSubmissions.AddAsync(submission, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _dbContext.ContactSubmissions.AddAsync(submission, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqliteException { SqliteErrorCode: 19 })
+        {
+            return false;
+        }
     }
 }

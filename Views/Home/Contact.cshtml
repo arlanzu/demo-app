@@ -13,7 +13,7 @@
             <div class="alert alert-info" role="alert">@infoMessage</div>
         }
 
-        <form asp-action="Contact" asp-controller="Home" method="post" novalidate>
+        <form asp-action="Contact" asp-controller="Home" method="post">
             @Html.AntiForgeryToken()
             <input asp-for="SubmissionToken" type="hidden" />
 
