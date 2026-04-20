@@ -42,10 +42,44 @@ body {
 
 .contact-title {
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
+  margin-bottom: 1.75rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: #0f172a;
+}
+
+.contact-form .form-label {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.contact-form .form-control {
+  min-height: 44px;
+  border-color: #cbd5e1;
+}
+
+.contact-form .form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+}
+
+.contact-submit-btn {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  min-height: 46px;
+}
+
+.contact-submit-btn:hover,
+.contact-submit-btn:focus {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.contact-submit-btn:focus-visible {
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.28);
 }
 
 @media (max-width: 576px) {
@@ -54,6 +88,6 @@ body {
   }
 
   .contact-title {
-    font-size: 1.75rem;
+    font-size: 1.85rem;
   }
 }
