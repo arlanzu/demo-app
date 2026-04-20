@@ -19,4 +19,41 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #f8fafc;
+}
+
+.contact-page {
+  min-height: calc(100vh - 220px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.contact-card {
+  width: 100%;
+  max-width: 640px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.contact-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+@media (max-width: 576px) {
+  .contact-card {
+    padding: 1.25rem;
+  }
+
+  .contact-title {
+    font-size: 1.75rem;
+  }
 }
