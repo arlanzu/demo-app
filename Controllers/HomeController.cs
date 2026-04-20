@@ -11,12 +11,10 @@ namespace DemoApp.Controllers;
 public class HomeController : Controller
 {
     private readonly IContactService _contactService;
-    private readonly ILogger<HomeController> _logger;
 
-    public HomeController(IContactService contactService, ILogger<HomeController> logger)
+    public HomeController(IContactService contactService)
     {
         _contactService = contactService;
-        _logger = logger;
     }
 
     public IActionResult Index()
@@ -32,12 +30,7 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Contact()
     {
-        var viewModel = new ContactFormViewModel
-        {
-            SubmissionToken = CreateSubmissionToken()
-        };
-
-        return View(viewModel);
+        return View(CreateContactFormViewModel());
     }
 
     [HttpPost]
@@ -47,9 +40,7 @@ public class HomeController : Controller
         if (!ModelState.IsValid)
         {
             ModelState.AddModelError(string.Empty, "Please correct the highlighted fields and try again.");
-            viewModel.SubmissionToken = string.IsNullOrWhiteSpace(viewModel.SubmissionToken)
-                ? CreateSubmissionToken()
-                : viewModel.SubmissionToken;
+            EnsureSubmissionToken(viewModel);
             return View(viewModel);
         }
 
@@ -92,5 +83,21 @@ public class HomeController : Controller
     private static string CreateSubmissionToken()
     {
         return Convert.ToHexString(RandomNumberGenerator.GetBytes(16)).ToLowerInvariant();
+    }
+
+    private static ContactFormViewModel CreateContactFormViewModel()
+    {
+        return new ContactFormViewModel
+        {
+            SubmissionToken = CreateSubmissionToken()
+        };
+    }
+
+    private static void EnsureSubmissionToken(ContactFormViewModel viewModel)
+    {
+        if (string.IsNullOrWhiteSpace(viewModel.SubmissionToken))
+        {
+            viewModel.SubmissionToken = CreateSubmissionToken();
+        }
     }
 }

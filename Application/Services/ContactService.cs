@@ -33,8 +33,8 @@ public class ContactService : IContactService
             CreatedAt = DateTime.UtcNow
         };
 
-        var inserted = await _contactSubmissionRepository.TryAddAsync(entity, cancellationToken);
-        return inserted
+        var isInserted = await _contactSubmissionRepository.TryAddAsync(entity, cancellationToken);
+        return isInserted
             ? ContactSubmissionResult.Success()
             : ContactSubmissionResult.Duplicate();
     }
