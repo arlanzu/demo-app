@@ -57,5 +57,25 @@ public sealed class ContactServiceTests
             IReadOnlyList<ContactSubmission> result = Array.Empty<ContactSubmission>();
             return Task.FromResult(result);
         }
+
+        public Task<ContactSubmission?> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            return Task.FromResult<ContactSubmission?>(null);
+        }
+
+        public Task<int> AddAsync(ContactSubmission submission, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(1);
+        }
+
+        public Task UpdateAsync(ContactSubmission submission, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(ContactSubmission submission, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

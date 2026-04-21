@@ -1,0 +1,36 @@
+@model DemoApp.Models.ViewModels.AdminSubmissionDetailsViewModel
+
+@{
+    ViewData["Title"] = "Request Details";
+}
+
+<section class="contact-page">
+    <div class="contact-card">
+        <h1 class="contact-title">Request Details</h1>
+
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Id</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Name</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Phone</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Phone) ? "-" : Model.Phone)</dd>
+
+            <dt class="col-sm-3">Message</dt>
+            <dd class="col-sm-9">@Model.Message</dd>
+
+            <dt class="col-sm-3">Submitted (UTC)</dt>
+            <dd class="col-sm-9">@Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+        </dl>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+</section>

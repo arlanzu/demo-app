@@ -45,4 +45,33 @@ public class ContactSubmissionRepository : IContactSubmissionRepository
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync(cancellationToken);
     }
+
+    /// <inheritdoc />
+    public async Task<ContactSubmission?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return await _dbContext.ContactSubmissions
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<int> AddAsync(ContactSubmission submission, CancellationToken cancellationToken)
+    {
+        await _dbContext.ContactSubmissions.AddAsync(submission, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return submission.Id;
+    }
+
+    /// <inheritdoc />
+    public async Task UpdateAsync(ContactSubmission submission, CancellationToken cancellationToken)
+    {
+        _dbContext.ContactSubmissions.Update(submission);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(ContactSubmission submission, CancellationToken cancellationToken)
+    {
+        _dbContext.ContactSubmissions.Remove(submission);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

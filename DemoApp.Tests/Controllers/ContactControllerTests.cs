@@ -134,6 +134,26 @@ public sealed class ContactControllerTests
             IReadOnlyList<ContactSubmissionSummary> result = Array.Empty<ContactSubmissionSummary>();
             return Task.FromResult(result);
         }
+
+        public Task<ContactSubmissionSummary?> GetSubmissionByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            return Task.FromResult<ContactSubmissionSummary?>(null);
+        }
+
+        public Task<int> CreateSubmissionAsync(AdminSubmissionRequest request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(1);
+        }
+
+        public Task<bool> UpdateSubmissionAsync(int id, AdminSubmissionRequest request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(false);
+        }
+
+        public Task<bool> DeleteSubmissionAsync(int id, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(false);
+        }
     }
 
     private sealed class TestTempDataProvider : ITempDataProvider
