@@ -38,4 +38,20 @@ public class ContactService : IContactService
             ? ContactSubmissionResult.Success()
             : ContactSubmissionResult.Duplicate();
     }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<ContactSubmissionSummary>> GetAllSubmissionsAsync(CancellationToken cancellationToken)
+    {
+        var submissions = await _contactSubmissionRepository.GetAllAsync(cancellationToken);
+
+        return submissions
+            .Select(s => new ContactSubmissionSummary(
+                s.Id,
+                s.Name,
+                s.Email,
+                s.Phone,
+                s.Message,
+                s.CreatedAt))
+            .ToList();
+    }
 }

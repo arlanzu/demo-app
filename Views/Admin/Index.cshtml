@@ -1,0 +1,46 @@
+@model DemoApp.Models.ViewModels.AdminSubmissionsViewModel
+
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<section class="contact-page">
+    <div class="contact-card">
+        <h1 class="contact-title">Submitted Requests</h1>
+
+        @if (!Model.Submissions.Any())
+        {
+            <p class="mb-0">No requests have been submitted yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Message</th>
+                            <th scope="col">Submitted (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var submission in Model.Submissions)
+                        {
+                            <tr>
+                                <td>@submission.Id</td>
+                                <td>@submission.Name</td>
+                                <td>@submission.Email</td>
+                                <td>@(string.IsNullOrWhiteSpace(submission.Phone) ? "-" : submission.Phone)</td>
+                                <td>@submission.Message</td>
+                                <td>@submission.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

@@ -36,4 +36,13 @@ public class ContactSubmissionRepository : IContactSubmissionRepository
             return false;
         }
     }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<ContactSubmission>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.ContactSubmissions
+            .AsNoTracking()
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

@@ -128,6 +128,12 @@ public sealed class ContactControllerTests
             LastRequest = request;
             return Task.FromResult(NextResult);
         }
+
+        public Task<IReadOnlyList<ContactSubmissionSummary>> GetAllSubmissionsAsync(CancellationToken cancellationToken)
+        {
+            IReadOnlyList<ContactSubmissionSummary> result = Array.Empty<ContactSubmissionSummary>();
+            return Task.FromResult(result);
+        }
     }
 
     private sealed class TestTempDataProvider : ITempDataProvider

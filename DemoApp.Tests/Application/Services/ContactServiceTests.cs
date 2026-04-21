@@ -51,5 +51,11 @@ public sealed class ContactServiceTests
             LastSubmission = submission;
             return Task.FromResult(NextTryAddResult);
         }
+
+        public Task<IReadOnlyList<ContactSubmission>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            IReadOnlyList<ContactSubmission> result = Array.Empty<ContactSubmission>();
+            return Task.FromResult(result);
+        }
     }
 }
