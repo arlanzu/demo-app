@@ -1,0 +1,13 @@
+@model DemoApp.Models.ViewModels.ContactThankYouViewModel
+
+@{
+    ViewData["Title"] = "Contact Submitted";
+}
+
+<section class="contact-page">
+    <div class="contact-card text-center">
+        <h1 class="contact-title">@Model.Heading</h1>
+        <p class="mb-4">@Model.Message</p>
+        <a asp-controller="Contact" asp-action="Contact" class="btn btn-primary">Send Another Message</a>
+    </div>
+</section>
