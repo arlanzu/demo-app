@@ -25,6 +25,8 @@ public class AdminSubmissionItemViewModel
 
     public string Message { get; set; } = string.Empty;
 
+    public string? Reply { get; set; }
+
     public DateTime CreatedAtUtc { get; set; }
 }
 
@@ -68,5 +70,25 @@ public class AdminSubmissionDetailsViewModel
 
     public string Message { get; set; } = string.Empty;
 
+    public string? Reply { get; set; }
+
     public DateTime CreatedAtUtc { get; set; }
+}
+
+/// <summary>
+/// Represents admin reply input for a submission.
+/// </summary>
+public class AdminReplyViewModel
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    public string Message { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(2000)]
+    public string Reply { get; set; } = string.Empty;
 }

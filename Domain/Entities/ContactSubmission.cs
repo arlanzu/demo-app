@@ -15,6 +15,8 @@ public class ContactSubmission
 
     public string Message { get; set; } = string.Empty;
 
+    public string? Reply { get; set; }
+
     public string SubmissionToken { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; }

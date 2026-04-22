@@ -52,6 +52,7 @@ public class ContactService : IContactService
                 s.Email,
                 s.Phone,
                 s.Message,
+                s.Reply,
                 s.CreatedAt))
             .ToList();
     }
@@ -72,6 +73,7 @@ public class ContactService : IContactService
             submission.Email,
             submission.Phone,
             submission.Message,
+            submission.Reply,
             submission.CreatedAt);
     }
 
@@ -121,6 +123,21 @@ public class ContactService : IContactService
         }
 
         await _contactSubmissionRepository.DeleteAsync(submission, cancellationToken);
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> SetReplyAsync(int id, string reply, CancellationToken cancellationToken)
+    {
+        var submission = await _contactSubmissionRepository.GetByIdAsync(id, cancellationToken);
+
+        if (submission is null)
+        {
+            return false;
+        }
+
+        submission.Reply = reply.Trim();
+        await _contactSubmissionRepository.UpdateAsync(submission, cancellationToken);
         return true;
     }
 }

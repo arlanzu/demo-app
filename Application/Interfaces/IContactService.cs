@@ -16,42 +16,51 @@ public interface IContactService
     Task<ContactSubmissionResult> SubmitContactAsync(ContactSubmissionRequest request, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Gets all submitted contact requests for administrative viewing.
+    /// Gets all submissions for administrative listing.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
     /// <returns>Read-only list of submission summaries.</returns>
     Task<IReadOnlyList<ContactSubmissionSummary>> GetAllSubmissionsAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Gets one submission by id for admin workflows.
+    /// Gets one submission by identifier.
     /// </summary>
     /// <param name="id">Submission identifier.</param>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
-    /// <returns>The matching summary or <c>null</c> when not found.</returns>
+    /// <returns>Submission summary when found; otherwise null.</returns>
     Task<ContactSubmissionSummary?> GetSubmissionByIdAsync(int id, CancellationToken cancellationToken);
 
     /// <summary>
     /// Creates a new submission from admin input.
     /// </summary>
-    /// <param name="request">Validated admin input.</param>
+    /// <param name="request">Validated admin submission payload.</param>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
-    /// <returns>Created submission id.</returns>
+    /// <returns>Created submission identifier.</returns>
     Task<int> CreateSubmissionAsync(AdminSubmissionRequest request, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Updates an existing submission.
+    /// Updates an existing submission by identifier.
     /// </summary>
     /// <param name="id">Submission identifier.</param>
-    /// <param name="request">Validated admin input.</param>
+    /// <param name="request">Validated admin update payload.</param>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
-    /// <returns><c>true</c> when updated; otherwise <c>false</c>.</returns>
+    /// <returns>True when updated; false when not found.</returns>
     Task<bool> UpdateSubmissionAsync(int id, AdminSubmissionRequest request, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Deletes a submission by id.
+    /// Deletes an existing submission by identifier.
     /// </summary>
     /// <param name="id">Submission identifier.</param>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
-    /// <returns><c>true</c> when deleted; otherwise <c>false</c>.</returns>
+    /// <returns>True when deleted; false when not found.</returns>
     Task<bool> DeleteSubmissionAsync(int id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Sets an admin reply for a submission.
+    /// </summary>
+    /// <param name="id">Submission identifier.</param>
+    /// <param name="reply">Reply text to store.</param>
+    /// <param name="cancellationToken">Cancellation token for async operations.</param>
+    /// <returns>True when updated; false when not found.</returns>
+    Task<bool> SetReplyAsync(int id, string reply, CancellationToken cancellationToken);
 }

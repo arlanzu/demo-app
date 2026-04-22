@@ -47,6 +47,9 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(2000);
 
+            entity.Property(e => e.Reply)
+                .HasMaxLength(2000);
+
             entity.Property(e => e.SubmissionToken)
                 .IsRequired()
                 .HasMaxLength(64);

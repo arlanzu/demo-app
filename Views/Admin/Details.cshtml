@@ -24,6 +24,9 @@
             <dt class="col-sm-3">Message</dt>
             <dd class="col-sm-9">@Model.Message</dd>
 
+            <dt class="col-sm-3">Reply</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Reply) ? "No reply yet." : Model.Reply)</dd>
+
             <dt class="col-sm-3">Submitted (UTC)</dt>
             <dd class="col-sm-9">@Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</dd>
         </dl>

@@ -28,6 +28,7 @@ public class AdminController : Controller
                     Email = s.Email,
                     Phone = s.Phone,
                     Message = s.Message,
+                    Reply = s.Reply,
                     CreatedAtUtc = s.CreatedAtUtc
                 })
                 .ToList()
@@ -78,6 +79,7 @@ public class AdminController : Controller
             Email = submission.Email,
             Phone = submission.Phone,
             Message = submission.Message,
+            Reply = submission.Reply,
             CreatedAtUtc = submission.CreatedAtUtc
         };
 
@@ -141,6 +143,52 @@ public class AdminController : Controller
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         await _contactService.DeleteSubmissionAsync(id, cancellationToken);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Reply(int id, CancellationToken cancellationToken)
+    {
+        var submission = await _contactService.GetSubmissionByIdAsync(id, cancellationToken);
+
+        if (submission is null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = new AdminReplyViewModel
+        {
+            Id = submission.Id,
+            Name = submission.Name,
+            Email = submission.Email,
+            Message = submission.Message,
+            Reply = submission.Reply ?? string.Empty
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reply(int id, AdminReplyViewModel viewModel, CancellationToken cancellationToken)
+    {
+        if (id != viewModel.Id)
+        {
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
+        var updated = await _contactService.SetReplyAsync(id, viewModel.Reply, cancellationToken);
+
+        if (!updated)
+        {
+            return NotFound();
+        }
+
         return RedirectToAction(nameof(Index));
     }
 }

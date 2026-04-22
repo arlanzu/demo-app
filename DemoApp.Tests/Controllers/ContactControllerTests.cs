@@ -154,6 +154,11 @@ public sealed class ContactControllerTests
         {
             return Task.FromResult(false);
         }
+
+        public Task<bool> SetReplyAsync(int id, string reply, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(false);
+        }
     }
 
     private sealed class TestTempDataProvider : ITempDataProvider

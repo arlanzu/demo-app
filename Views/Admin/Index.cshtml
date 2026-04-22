@@ -5,7 +5,7 @@
 }
 
 <section class="contact-page">
-    <div class="contact-card">
+    <div class="contact-card admin-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="contact-title mb-0">Submitted Requests</h1>
             <a asp-action="Create" class="btn btn-primary">Create Request</a>
@@ -26,6 +26,7 @@
                             <th scope="col">Email</th>
                             <th scope="col">Phone</th>
                             <th scope="col">Message</th>
+                            <th scope="col">Reply</th>
                             <th scope="col">Submitted (UTC)</th>
                             <th scope="col">Actions</th>
                         </tr>
@@ -39,9 +40,11 @@
                                 <td>@submission.Email</td>
                                 <td>@(string.IsNullOrWhiteSpace(submission.Phone) ? "-" : submission.Phone)</td>
                                 <td>@submission.Message</td>
+                                <td>@(string.IsNullOrWhiteSpace(submission.Reply) ? "No reply yet." : submission.Reply)</td>
                                 <td>@submission.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
                                 <td>
                                     <div class="d-flex gap-2">
+                                        <a asp-action="Reply" asp-route-id="@submission.Id" class="btn btn-sm btn-success">Reply</a>
                                         <a asp-action="Details" asp-route-id="@submission.Id" class="btn btn-sm btn-outline-secondary">Details</a>
                                         <a asp-action="Edit" asp-route-id="@submission.Id" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <form asp-action="Delete" asp-route-id="@submission.Id" method="post" class="d-inline">
