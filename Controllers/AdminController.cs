@@ -142,7 +142,13 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        await _contactService.DeleteSubmissionAsync(id, cancellationToken);
+        var deleted = await _contactService.DeleteSubmissionAsync(id, cancellationToken);
+
+        if (!deleted)
+        {
+            return NotFound();
+        }
+
         return RedirectToAction(nameof(Index));
     }
 

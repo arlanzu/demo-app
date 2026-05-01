@@ -12,6 +12,20 @@ namespace DemoApp.Tests.Controllers;
 public sealed class ContactControllerTests
 {
     [TestMethod]
+    public void Contact_GetRequest_ReturnsContactView()
+    {
+        var service = new FakeContactService();
+        var controller = CreateController(service);
+
+        var result = controller.Contact();
+
+        Assert.IsInstanceOfType(result, typeof(ViewResult));
+        var viewResult = (ViewResult)result;
+        Assert.IsNull(viewResult.ViewName);
+        Assert.IsInstanceOfType(viewResult.Model, typeof(ContactFormViewModel));
+    }
+
+    [TestMethod]
     public void Contact_GetRequest_ReturnsViewWithSubmissionToken()
     {
         var service = new FakeContactService();
@@ -24,6 +38,49 @@ public sealed class ContactControllerTests
         Assert.IsInstanceOfType(viewResult.Model, typeof(ContactFormViewModel));
         var model = (ContactFormViewModel)viewResult.Model!;
         Assert.IsFalse(string.IsNullOrWhiteSpace(model.SubmissionToken));
+        Assert.AreEqual(32, model.SubmissionToken.Length);
+    }
+
+    [TestMethod]
+    public async Task Contact_ValidModel_CallsServiceWithSubmissionData()
+    {
+        var service = new FakeContactService
+        {
+            NextResult = ContactSubmissionResult.Success()
+        };
+        var controller = CreateController(service);
+        var viewModel = CreateValidViewModel();
+
+        await controller.Contact(viewModel, CancellationToken.None);
+
+        Assert.AreEqual(1, service.SubmitCallCount);
+        Assert.IsNotNull(service.LastRequest);
+        Assert.AreEqual(viewModel.Name, service.LastRequest.Name);
+        Assert.AreEqual(viewModel.Email, service.LastRequest.Email);
+        Assert.AreEqual(viewModel.Phone, service.LastRequest.Phone);
+        Assert.AreEqual(viewModel.Message, service.LastRequest.Message);
+        Assert.AreEqual(viewModel.SubmissionToken, service.LastRequest.SubmissionToken);
+    }
+
+    [TestMethod]
+    public async Task Contact_ServiceReturnsSuccess_RedirectsToThankYou()
+    {
+        var service = new FakeContactService
+        {
+            NextResult = ContactSubmissionResult.Success()
+        };
+        var controller = CreateController(service);
+        var viewModel = CreateValidViewModel();
+
+        var result = await controller.Contact(viewModel, CancellationToken.None);
+
+        Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
+        var redirectResult = (RedirectToActionResult)result;
+        Assert.AreEqual(nameof(ThankYouController.Index), redirectResult.ActionName);
+        Assert.AreEqual("ThankYou", redirectResult.ControllerName);
+        Assert.AreEqual(1, service.SubmitCallCount);
+        Assert.IsNotNull(service.LastRequest);
+        Assert.AreEqual(viewModel.Name, service.LastRequest.Name);
     }
 
     [TestMethod]
@@ -32,7 +89,6 @@ public sealed class ContactControllerTests
         var service = new FakeContactService();
         var controller = CreateController(service);
         controller.ModelState.AddModelError(nameof(ContactFormViewModel.Name), "Name is required.");
-
         var viewModel = new ContactFormViewModel
         {
             Name = string.Empty,
@@ -45,32 +101,26 @@ public sealed class ContactControllerTests
 
         Assert.IsInstanceOfType(result, typeof(ViewResult));
         var viewResult = (ViewResult)result;
+        Assert.IsNull(viewResult.ViewName);
         Assert.IsInstanceOfType(viewResult.Model, typeof(ContactFormViewModel));
         var returnedModel = (ContactFormViewModel)viewResult.Model!;
-        Assert.AreEqual(0, service.CallCount);
+        Assert.AreEqual(0, service.SubmitCallCount);
         Assert.IsFalse(string.IsNullOrWhiteSpace(returnedModel.SubmissionToken));
     }
 
     [TestMethod]
-    public async Task Contact_ServiceReturnsSuccess_RedirectsToThankYou()
+    public async Task Contact_ModelStateInvalid_PreservesValidationErrors()
     {
-        var service = new FakeContactService
-        {
-            NextResult = ContactSubmissionResult.Success()
-        };
+        var service = new FakeContactService();
         var controller = CreateController(service);
-
+        controller.ModelState.AddModelError(nameof(ContactFormViewModel.Email), "Enter a valid email address.");
         var viewModel = CreateValidViewModel();
 
-        var result = await controller.Contact(viewModel, CancellationToken.None);
+        await controller.Contact(viewModel, CancellationToken.None);
 
-        Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
-        var redirectResult = (RedirectToActionResult)result;
-        Assert.AreEqual(nameof(ThankYouController.Index), redirectResult.ActionName);
-        Assert.AreEqual("ThankYou", redirectResult.ControllerName);
-        Assert.AreEqual(1, service.CallCount);
-        Assert.IsNotNull(service.LastRequest);
-        Assert.AreEqual(viewModel.Name, service.LastRequest.Name);
+        Assert.IsFalse(controller.ModelState.IsValid);
+        Assert.IsTrue(controller.ModelState.ContainsKey(nameof(ContactFormViewModel.Email)));
+        Assert.IsTrue(controller.ModelState.ContainsKey(string.Empty));
     }
 
     [TestMethod]
@@ -81,7 +131,6 @@ public sealed class ContactControllerTests
             NextResult = ContactSubmissionResult.Duplicate()
         };
         var controller = CreateController(service);
-
         var viewModel = CreateValidViewModel();
 
         var result = await controller.Contact(viewModel, CancellationToken.None);
@@ -89,7 +138,73 @@ public sealed class ContactControllerTests
         Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
         var redirectResult = (RedirectToActionResult)result;
         Assert.AreEqual(nameof(ContactController.Contact), redirectResult.ActionName);
+        Assert.IsNull(redirectResult.ControllerName);
         Assert.IsTrue(controller.TempData.ContainsKey("ContactInfoMessage"));
+    }
+
+    [TestMethod]
+    public async Task Contact_ServiceReturnsDuplicate_DoesNotReportSuccess()
+    {
+        var service = new FakeContactService
+        {
+            NextResult = ContactSubmissionResult.Duplicate()
+        };
+        var controller = CreateController(service);
+
+        await controller.Contact(CreateValidViewModel(), CancellationToken.None);
+
+        Assert.AreEqual(1, service.SubmitCallCount);
+        Assert.IsFalse(service.NextResult.IsSuccess);
+        Assert.IsTrue(service.NextResult.IsDuplicate);
+    }
+
+    [TestMethod]
+    public async Task Contact_ValidModel_PreservesWhitespaceForServiceLayerToTrim()
+    {
+        var service = new FakeContactService();
+        var controller = CreateController(service);
+        var viewModel = new ContactFormViewModel
+        {
+            Name = "  Ana  ",
+            Email = "  ana@example.com  ",
+            Phone = "  +12345  ",
+            Message = "  This is a valid contact message.  ",
+            SubmissionToken = "abcdefabcdefabcdefabcdefabcdefab"
+        };
+
+        await controller.Contact(viewModel, CancellationToken.None);
+
+        Assert.IsNotNull(service.LastRequest);
+        Assert.AreEqual("  Ana  ", service.LastRequest.Name);
+        Assert.AreEqual("  ana@example.com  ", service.LastRequest.Email);
+        Assert.AreEqual("  +12345  ", service.LastRequest.Phone);
+        Assert.AreEqual("  This is a valid contact message.  ", service.LastRequest.Message);
+    }
+
+    [TestMethod]
+    public async Task Contact_ValidModel_WithNullPhone_CallsServiceWithNullPhone()
+    {
+        var service = new FakeContactService();
+        var controller = CreateController(service);
+        var viewModel = CreateValidViewModel();
+        viewModel.Phone = null;
+
+        await controller.Contact(viewModel, CancellationToken.None);
+
+        Assert.IsNotNull(service.LastRequest);
+        Assert.IsNull(service.LastRequest.Phone);
+    }
+
+    [TestMethod]
+    public void Contact_PostAction_HasValidateAntiForgeryTokenAttribute()
+    {
+        var method = typeof(ContactController).GetMethods()
+            .Single(m => m.Name == nameof(ContactController.Contact)
+                && m.GetParameters().Length == 2
+                && m.GetParameters()[0].ParameterType == typeof(ContactFormViewModel));
+
+        Assert.IsTrue(method.GetCustomAttributes(typeof(ValidateAntiForgeryTokenAttribute), inherit: false).Any());
+        Assert.IsTrue(method.GetCustomAttributes(typeof(HttpPostAttribute), inherit: false).Any());
     }
 
     private static ContactController CreateController(FakeContactService service)
@@ -116,7 +231,7 @@ public sealed class ContactControllerTests
 
     private sealed class FakeContactService : IContactService
     {
-        public int CallCount { get; private set; }
+        public int SubmitCallCount { get; private set; }
 
         public ContactSubmissionRequest? LastRequest { get; private set; }
 
@@ -124,7 +239,7 @@ public sealed class ContactControllerTests
 
         public Task<ContactSubmissionResult> SubmitContactAsync(ContactSubmissionRequest request, CancellationToken cancellationToken)
         {
-            CallCount++;
+            SubmitCallCount++;
             LastRequest = request;
             return Task.FromResult(NextResult);
         }
