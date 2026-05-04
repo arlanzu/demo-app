@@ -17,9 +17,13 @@
 
   <ItemGroup>
     <Compile Remove="DemoApp.Tests\**\*.cs" />
+    <Compile Remove="DemoApp.AcceptanceTests\**\*.cs" />
     <Content Remove="DemoApp.Tests\**\*" />
+    <Content Remove="DemoApp.AcceptanceTests\**\*" />
     <EmbeddedResource Remove="DemoApp.Tests\**\*" />
+    <EmbeddedResource Remove="DemoApp.AcceptanceTests\**\*" />
     <None Remove="DemoApp.Tests\**\*" />
+    <None Remove="DemoApp.AcceptanceTests\**\*" />
   </ItemGroup>
 
 </Project>

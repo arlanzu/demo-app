@@ -35,3 +35,7 @@ app.MapControllerRoute(
     pattern: "{controller=Contact}/{action=Contact}/{id?}");
 
 app.Run();
+
+public partial class Program
+{
+}
